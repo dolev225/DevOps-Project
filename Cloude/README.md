@@ -14,12 +14,10 @@
 
 
 ---
-<div align="center">
-
 | # | Project Title | Tools & Technologies | Description |
-|---|---|---|---|
-| clude | | | |
+| :-: | :-: | :-: | :-: |
+| <th colspan="4">clude</th> |
 | 01 | Deploy-EC2 | AWS | |
 | 02 | Deploy-EC2 | AWS | |
-
-</div>
+| 03 | Deploy-EC2 | AWS | |
+| 04 | Deploy-EC2 | AWS | |
