@@ -13,7 +13,7 @@
 | <th colspan="2.5">Linux</th> |
 | **06** | USERS | AWS | |
 | **07** | Load-Balancer | AWS | |
-| <th colspan="2.5">*Local-Deployment*</th> |
+| <th colspan="2.5">**Local-Deployment**</th> |
 | **08** | Deploy-EC2 | AWS | |
 | **09** | Load-Balancer | AWS | |
 | **10** | Auto-Scaling&LB | AWS | |
