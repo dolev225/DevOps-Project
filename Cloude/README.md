@@ -3,19 +3,17 @@
 
 ## 📊 **Complete Projects Overview Table**
 
-| # | Project Title | Tools & Technologies | Description |
-| <th colspan="2">clude</th> |
-| **01** | Deploy-EC2 | AWS | |
-| **02** | Load-Balancer | AWS | |
-| **03** | Auto-Scaling&LB | AWS | |
-| **04** |  | AWS | |
-| **05** |  | AWS | |
-| <th colspan="2">Linux</th> |
-| **06** | USERS | AWS | |
-| **07** | Load-Balancer | AWS | |
-| <th colspan="2">Local Deployment</th> |
-| **08** | Deploy-EC2 | AWS | |
-| **09** | Load-Balancer | AWS | |
-| **10** | Auto-Scaling&LB | AWS | |
+| # | Category | Project Title | Tools & Technologies | Description |
+|---|---|---|---|---|
+| **01** | Include | Deploy-EC2 | AWS | |
+| **02** | Include | Load-Balancer | AWS | |
+| **03** | Include | Auto-Scaling&LB | AWS | |
+| **04** | Include | | AWS | |
+| **05** | Include | | AWS | |
+| **06** | Linux | USERS | AWS | |
+| **07** | Linux | Load-Balancer | AWS | |
+| **08** | Local-Deployment | Deploy-EC2 | AWS | |
+| **09** | Local-Deployment | Load-Balancer | AWS | |
+| **10** | Local-Deployment | Auto-Scaling&LB | AWS | |
 
 ---
