@@ -1,0 +1,177 @@
+name: pipeline-project
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  hello-world:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Run Hello World JS Action
+        uses: actions/hello-world-javascript-action@main
+        with:
+          who-to-greet: "GitHub Actions Student"
+          
+      - name: Print Production Environment Variable
+        run: echo "The current environment is:${{ vars.MY_ENVIRONMENT }}"
+
+  Linting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+
+#------------------Hadolint-----------------------#
+      - name: Hadolint-scan
+        run: echo "Hadolint command"
+
+      - name: Notify Slack (Hadolint)
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: 'Hadolint passed'
+
+
+#------------------Flask8-----------------------#
+      - name: Flask8-scan
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - run: pip install -r requirements.txt
+
+      -  run: echo "python -m flask -r ."
+
+      - name: Notify Slack (Bandit)
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: 'flask passed'
+
+        
+#------------------Shellcheck-----------------------#
+      - name: Check scripts with Shellcheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          files: .
+          severity: error
+          format: json
+          shell: bash
+
+      - name: Notify Slack (Linting)
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: 'passed Shellcheck scan '
+
+  Security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+#------------------Trivy-----------------------#
+      -  name: Install Trivy CLI
+         uses: ankurk91/install-trivy-cli-action@v2
+         with:
+           version: latest
+           cache: true
+       
+      - name: Run Trivy filesystem scan
+        run: trivy fs --severity HIGH,CRITICAL --exit-code 1 .
+
+      - name: Notify Slack (Linting)
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: 'passed Trivy scan '
+
+
+#------------------Bandit-----------------------#
+      - name: Run Bandit Scan
+        uses: actions/setup-python@v6
+        with:
+          python-python: '3.13'
+
+      - name: Install Bandit
+        run: pip install bandit
+
+      - name: Run Bandit Scan
+        run: bandit -r . --skip B311,B104
+
+      - name: Notify Slack (Linting)
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: 'passed Bandit scan '
+
+
+  Build-and-push: 
+    runs-on: ubuntu-latest
+    needs: [Linting, Security] 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+#------------------Docker login-----------------------#
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+
+      - name: Notify Slack (Linting)
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: ' login to docker hub passed '
+#------------------Docker build & Docker push-----------------------#
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: . 
+          push: true 
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/test10:latest 
+      
+      - name: Notify Slack (Build Success)
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: 'build and push passed and push to docker hub'
+  
+  Helm-install:
+    runs-on: ubuntu-latest
+    needs: [Linting, Security,Build-and-push] 
+#------------------Helm-template-----------------------#
+    steps:
+    - name: Helm template
+      uses: azure/setup-helm@v4
+      env:
+        ARGET_REPO_PAT: ${{ secrets.TARGET_REPO_PAT }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git clone git clone https://github.com/dolev225/argoCD.git
+
+          cd argoCD
+
+          helm template test10 ./chart --set image.repository=dolev1234/test10 --set image.tag=35 > devops-template.yaml
+          
+          git add .
+          git commit -m "Automated update of Helm chart from CI/CD pipeline (Commit: ${{ github.sha }})" || echo "No changes to commit"
+          git push
+            |
+
+
+    - name: Notify Slack (Linting)
+      uses: rtCamp/action-slack-notify@v2
+      env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: ' helm template '
+
+    
