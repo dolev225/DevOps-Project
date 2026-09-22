@@ -5,7 +5,8 @@
 
 | # | Project Title | Tools & Technologies | Description |
 |---|---------------|---------------------|-------------|
-|**clude**|         |
+| :-: | :-: | :-: | :-: |
+| clude | | | |
 | **01** | Deploy-EC2 | AWS  |  |
 | **02** | Deploy-EC2 | AWS  |  |
 | **03** | Deploy-EC2 | AWS  |  |
