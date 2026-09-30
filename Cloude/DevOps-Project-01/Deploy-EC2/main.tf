@@ -15,5 +15,5 @@ output "ip_server" {
 }
 output "ssh_connection_command" {
   description = "Command to SSH into the EC2 instance"
-  value       = "ssh -i 'test1.pem' / ec2-user@${module.my_infrastructure.ip_server}"
+  value       = "ssh -i 'test1.pem'  ec2-user@${module.my_infrastructure.ip_server}"
 }
