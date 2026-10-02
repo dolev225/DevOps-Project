@@ -1,22 +1,20 @@
 #!/bin/bash
 set -eux
 
-# 1. עדכון חבילות והתקנת nginx
 sudo dnf update -y
 sudo dnf install -y nginx
 
-# 2. יצירת התיקיות
+
 sudo mkdir -p /var/www/html
 sudo mkdir -p /usr/share/nginx/html
 
-# 3. מחיקת דף הדיפולט של Nginx במידה וקיים
 sudo rm -f /usr/share/nginx/html/index.html
 
-# 4. הורדת התמונה המבוקשת בשם אחיד
+
 sudo curl -sSL -o /var/www/html/animal.jpg "${image_base_url}/${image_file}" || true
 sudo cp /var/www/html/animal.jpg /usr/share/nginx/html/animal.jpg || true
 
-# 5. יצירת תוכן ה-HTML בשני הנתיבים (כדי לכסות את כל הקונפיגורציות של Nginx)
+
 cat <<HTML | sudo tee /var/www/html/index.html /usr/share/nginx/html/index.html
 <!DOCTYPE html>
 <html lang="en">
@@ -37,6 +35,5 @@ cat <<HTML | sudo tee /var/www/html/index.html /usr/share/nginx/html/index.html
 </html>
 HTML
 
-# 6. הפעלה וטעינה מחדש של Nginx
 sudo systemctl enable --now nginx
 sudo systemctl restart nginx
