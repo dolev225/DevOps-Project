@@ -27,9 +27,16 @@ This project uses **Terraform** to automatically create all the AWS resources ne
 
 ## 🏗️ Architecture
 
-```
-https://claude.ai/chat/images/architecture.svg
-```
+The Terraform files in this folder define the infrastructure. Running `terraform apply` creates the AWS resources, and the `user_data` script bootstraps the application on the instance's first boot.
+
+![Architecture diagram](./images/architecture.svg)
+
+| Component | Role |
+|-----------|------|
+| `main.tf` | Defines the security group, key pair and EC2 instance |
+| `variables.tf` / `terraform.tfvars` | Configurable inputs and your own values |
+| `scripts/user_data.sh` | Installs dependencies and starts the app on first boot |
+| `outputs.tf` | Prints the instance public IP and application URL |
 
 ---
 
@@ -86,6 +93,16 @@ Variables are defined in `variables.tf`:
 | `key_name`      | Name of the SSH key pair             | n/a           |
 | `allowed_ssh_cidr` | CIDR allowed to SSH (your IP/32)  | n/a           |
 
+<!-- TODO: Match this table to your real variables.tf. -->
+
+Create a `terraform.tfvars` file (excluded from Git):
+
+```hcl
+aws_region       = "us-east-1"
+instance_type    = "t2.micro"
+key_name         = "my-key"
+allowed_ssh_cidr = "203.0.113.10/32"   # replace with your public IP
+```
 
 ---
 
@@ -157,6 +174,7 @@ Every push and pull request to `main` that touches this project triggers the pip
 | `lint-markdown`         | markdownlint  | Keep documentation clean                         |
 | `secret-scan`           | Gitleaks      | Detect leaked credentials                        |
 | `check-sensitive-files` | Git + Bash    | Fail if `.pem`, `.env` or `.tfstate` are committed |
+
 
 ---
 
