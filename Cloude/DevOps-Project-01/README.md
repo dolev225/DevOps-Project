@@ -28,20 +28,8 @@ This project uses **Terraform** to automatically create all the AWS resources ne
 ## 🏗️ Architecture
 
 ```
- terraform apply
-       │
-       ▼
-┌─────────────────────────── AWS ───────────────────────────┐
-│  ┌────────────────┐     ┌──────────────────────────────┐  │
-│  │ Security Group │────►│ EC2 Instance                 │  │
-│  │ 22 (your IP)   │     │  └─ user_data: install + run │  │
-│  │ 80 (public)    │     └──────────────────────────────┘  │
-│  └────────────────┘                  ▲                    │
-└──────────────────────────────────────┼────────────────────┘
-                                       │ HTTP
-                                  ┌─────────┐
-                                  │  User   │
-                                  └─────────┘
+<img width="1233" height="945" alt="image" src="https://github.com/user-attachments/assets/fe42a531-5950-409b-a0a3-26a3a3152a06" />
+
 ```
 
 <!-- TODO: Replace with a real diagram: ![Architecture](./images/architecture.png) -->
