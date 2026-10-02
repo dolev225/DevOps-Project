@@ -175,27 +175,6 @@ Every push and pull request to `main` that touches this project triggers the pip
 
 ---
 
-## 🔒 Security Best Practices
-
-- Restrict SSH (port 22) to your own IP via `allowed_ssh_cidr`, never `0.0.0.0/0`
-- Never commit `.pem` files, `terraform.tfvars` or `*.tfstate` (they may contain secrets)
-- Use a **remote backend** (S3 + DynamoDB locking) for state in team environments
-- Use IAM roles / least-privilege policies instead of hard-coded access keys
-- Keep the OS and packages updated
-
-Recommended `.gitignore`:
-
-```
-*.pem
-*.tfstate
-*.tfstate.*
-.terraform/
-terraform.tfvars
-crash.log
-```
-
----
-
 ## 🧹 Cleanup
 
 To avoid unexpected AWS charges, destroy all resources when you are done:
