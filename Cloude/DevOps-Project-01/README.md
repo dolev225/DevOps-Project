@@ -67,18 +67,22 @@ The Terraform files in this folder define the infrastructure. Running `terraform
 ## 📁 Project Structure
 
 ```
-Deploy-EC2/
-├── main.tf              # EC2 instance, security group, key pair
-├── variables.tf         # Input variables
-├── outputs.tf           # Public IP / URL outputs
-├── providers.tf         # AWS provider and Terraform version
-├── terraform.tfvars     # Your variable values (not committed)
-├── scripts/
-│   └── user_data.sh     # Bootstrap script
-└── README.md
-```
-
-<!-- TODO: Replace with your actual file tree. -->
+└───Deploy-EC2
+    ├───.terraform
+    │   ├───modules
+    │   └───providers
+    │       └───registry.terraform.io
+    │           └───hashicorp
+    │               └───aws
+    │                   └───6.66.0
+    │                       └───windows_amd64
+    └───Mode
+        ├───instanc.tf
+        ├───output.tf
+        ├───screp.sh
+        ├───sg.tf
+        ├───var.tf
+        └───VPC.tf
 
 ---
 
