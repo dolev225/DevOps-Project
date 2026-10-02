@@ -17,7 +17,6 @@ This project uses **Terraform** to automatically create all the AWS resources ne
 
 - Defining infrastructure as code with Terraform
 - Provisioning EC2, security groups and SSH key pairs
-- Automated instance bootstrapping with `user_data`
 - Exposing outputs (public IP / URL) after deployment
 - Clean teardown with `terraform destroy`
 
