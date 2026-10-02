@@ -202,24 +202,9 @@ Useful: check the bootstrap log on the instance with `sudo cat /var/log/cloud-in
 
 ---
 
-## 🔮 Future Improvements
-
-- [x] Provision infrastructure with Terraform
-- [x] Add CI pipeline (GitHub Actions)
-- [ ] Remote state backend (S3 + DynamoDB)
-- [ ] CD: run `terraform apply` automatically on merge to `main`
-- [ ] Containerize the app with Docker
-- [ ] Monitoring with CloudWatch
-
----
-
 ## 👤 Author
 
 **Dolev**
 GitHub: [@dolev225](https://github.com/dolev225)
 
 ---
-
-## 📄 License
-
-This project is licensed under the MIT License.
