@@ -28,30 +28,7 @@ This project uses **Terraform** to automatically create all the AWS resources ne
 ## 🏗️ Architecture
 
 ```
-The Terraform files in this folder define the infrastructure. Running terraform apply creates the AWS resources, and the user_data script bootstraps the application on the instance's first boot.
-
-terraform apply
-terraform apply
-terraform apply
-user_data
-☁️ AWS Cloud
-Security groupPorts 22 and 80
-EC2 instanceRuns the application
-Key pairSSH access
-Public IP / URL
-📁 Deploy-EC2/
-providers.tfAWS provider, versions
-main.tfResource definitions
-variables.tfInput variables
-terraform.tfvarsYour values, git-ignored
-scripts/user_data.shBootstrap on first boot
-outputs.tfPublic IP and URL
-Component	Role
-main.tf	Defines the security group, key pair and EC2 instance
-variables.tf / terraform.tfvars	Configurable inputs and your own values
-scripts/user_data.sh	Installs dependencies and starts the app on first boot
-outputs.tf	Prints the instance public IP and application URL
-
+https://claude.ai/chat/images/architecture.svg
 ```
 
 ---
