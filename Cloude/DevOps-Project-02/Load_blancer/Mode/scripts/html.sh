@@ -38,5 +38,3 @@ HTML
 
 sudo systemctl enable --now nginx
 sudo systemctl restart nginx
-
-#add
