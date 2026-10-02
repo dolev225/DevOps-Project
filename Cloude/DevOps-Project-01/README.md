@@ -149,15 +149,8 @@ instance_public_ip = "x.x.x.x"
 application_url    = "http://x.x.x.x"
 ```
 
-### 6. Verify
 
-```bash
-curl http://<instance_public_ip>
-```
-
-Or open the URL in your browser. Allow a minute or two after `apply` for `user_data` to finish installing.
-
-### 7. Connect via SSH (optional)
+### 6. Connect via SSH (optional)
 
 ```bash
 chmod 400 my-key.pem
