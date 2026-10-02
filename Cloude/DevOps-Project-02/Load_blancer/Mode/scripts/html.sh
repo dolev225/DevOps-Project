@@ -11,6 +11,7 @@ sudo mkdir -p /usr/share/nginx/html
 sudo rm -f /usr/share/nginx/html/index.html
 
 
+
 sudo curl -sSL -o /var/www/html/animal.jpg "${image_base_url}/${image_file}" || true
 sudo cp /var/www/html/animal.jpg /usr/share/nginx/html/animal.jpg || true
 
