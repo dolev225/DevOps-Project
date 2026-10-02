@@ -101,16 +101,6 @@ Variables are defined in `variables.tf`:
 | `key_name`      | Name of the SSH key pair             | n/a           |
 | `allowed_ssh_cidr` | CIDR allowed to SSH (your IP/32)  | n/a           |
 
-<!-- TODO: Match this table to your real variables.tf. -->
-
-Create a `terraform.tfvars` file (excluded from Git):
-
-```hcl
-aws_region       = "us-east-1"
-instance_type    = "t2.micro"
-key_name         = "my-key"
-allowed_ssh_cidr = "203.0.113.10/32"   # replace with your public IP
-```
 
 ---
 
