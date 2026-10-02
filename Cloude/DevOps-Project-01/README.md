@@ -82,6 +82,7 @@ The Terraform files in this folder define the infrastructure. Running `terraform
         ├───sg.tf
         ├───var.tf
         └───VPC.tf
+```
 
 ---
 
