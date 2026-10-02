@@ -1,23 +1,25 @@
-# 🚀 Deploy to AWS EC2
+# 🚀 Deploy to AWS EC2 with Terraform
 
-> Deploying an application on an AWS EC2 instance as part of **DevOps Project 01**.
+> Infrastructure as Code: provisioning an AWS EC2 instance and deploying an application with a single `terraform apply`.
 
 ![AWS](https://img.shields.io/badge/AWS-EC2-FF9900?logo=amazonaws&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC?logo=terraform&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-Ubuntu-E95420?logo=ubuntu&logoColor=white)
-![Status](https://img.shields.io/badge/status-completed-brightgreen)
+[![CI](https://github.com/dolev225/DevOps-Project/actions/workflows/ci.yml/badge.svg)](https://github.com/dolev225/DevOps-Project/actions/workflows/ci.yml)
 
 ---
 
 ## 📖 Overview
 
-This project demonstrates how to provision and configure an AWS EC2 instance and deploy an application on it, following DevOps best practices.
+This project uses **Terraform** to automatically create all the AWS resources needed to run an application on EC2: a key pair, a security group and the EC2 instance itself. A bootstrap script (`user_data`) installs the dependencies and starts the application on first boot, so the whole environment is reproducible with one command.
 
-**What you will learn / what this project covers:**
+**What this project covers:**
 
-- Launching and configuring an EC2 instance
-- Setting up security groups and SSH key pairs
-- Installing dependencies and deploying the application
-- Verifying the deployment and accessing it from the internet
+- Defining infrastructure as code with Terraform
+- Provisioning EC2, security groups and SSH key pairs
+- Automated instance bootstrapping with `user_data`
+- Exposing outputs (public IP / URL) after deployment
+- Clean teardown with `terraform destroy`
 
 <!-- TODO: Add 1-2 sentences describing the specific application you deploy. -->
 
@@ -26,43 +28,47 @@ This project demonstrates how to provision and configure an AWS EC2 instance and
 ## 🏗️ Architecture
 
 ```
-┌──────────┐      HTTP/HTTPS       ┌──────────────────────────┐
-│  User    │ ────────────────────► │  AWS EC2 Instance        │
-│ (Browser)│                       │  ├─ Security Group       │
-└──────────┘                       │  ├─ Application / Web    │
-                                   │  └─ OS: Ubuntu / AL2023  │
-      ▲  SSH (port 22)             └──────────────────────────┘
-      │
-┌──────────┐
-│  DevOps  │
-│ Engineer │
-└──────────┘
+ terraform apply
+       │
+       ▼
+┌─────────────────────────── AWS ───────────────────────────┐
+│  ┌────────────────┐     ┌──────────────────────────────┐  │
+│  │ Security Group │────►│ EC2 Instance                 │  │
+│  │ 22 (your IP)   │     │  └─ user_data: install + run │  │
+│  │ 80 (public)    │     └──────────────────────────────┘  │
+│  └────────────────┘                  ▲                    │
+└──────────────────────────────────────┼────────────────────┘
+                                       │ HTTP
+                                  ┌─────────┐
+                                  │  User   │
+                                  └─────────┘
 ```
 
-<!-- TODO: Replace with a real architecture diagram image: ![Architecture](./images/architecture.png) -->
+<!-- TODO: Replace with a real diagram: ![Architecture](./images/architecture.png) -->
 
 ---
 
 ## 🧰 Tech Stack
 
-| Category        | Tools                          |
-|-----------------|--------------------------------|
-| Cloud Provider  | AWS (EC2, VPC, Security Groups)|
-| OS              | Ubuntu / Amazon Linux          |
-| Web Server      | <!-- Nginx / Apache / Node --> |
-| Scripting       | Bash                           |
-| Version Control | Git & GitHub                   |
+| Category        | Tools                              |
+|-----------------|------------------------------------|
+| IaC             | Terraform                          |
+| Cloud Provider  | AWS (EC2, VPC, Security Groups)    |
+| OS              | Ubuntu / Amazon Linux              |
+| Web Server      | <!-- Nginx / Apache / Node -->     |
+| CI              | GitHub Actions                     |
+| Version Control | Git & GitHub                       |
 
 ---
 
 ## ✅ Prerequisites
 
-Before you begin, make sure you have:
-
-- An active [AWS account](https://aws.amazon.com/)
-- An SSH key pair (`.pem` file) created in AWS
-- [AWS CLI](https://aws.amazon.com/cli/) installed and configured (optional)
-- Basic knowledge of Linux command line
+| Requirement | Notes |
+|-------------|-------|
+| [Terraform](https://developer.hashicorp.com/terraform/install) `>= 1.5` | Verify with `terraform -version` |
+| [AWS CLI](https://aws.amazon.com/cli/) | Configured with `aws configure` |
+| AWS account | IAM user/role with EC2 permissions |
+| SSH key pair | Existing key in AWS, or generate one locally (see below) |
 
 ---
 
@@ -70,106 +76,178 @@ Before you begin, make sure you have:
 
 ```
 Deploy-EC2/
-├── README.md
-├── <!-- script / config files -->
-└── images/          # Screenshots
+├── main.tf              # EC2 instance, security group, key pair
+├── variables.tf         # Input variables
+├── outputs.tf           # Public IP / URL outputs
+├── providers.tf         # AWS provider and Terraform version
+├── terraform.tfvars     # Your variable values (not committed)
+├── scripts/
+│   └── user_data.sh     # Bootstrap script
+└── README.md
 ```
 
 <!-- TODO: Replace with your actual file tree. -->
 
 ---
 
-## ⚙️ Setup & Deployment
+## ⚙️ Configuration
 
-### 1. Launch the EC2 instance
+Variables are defined in `variables.tf`:
 
-1. Open the **AWS Console → EC2 → Launch Instance**
-2. Choose an AMI (e.g., Ubuntu Server 22.04 LTS)
-3. Select instance type (e.g., `t2.micro` – Free Tier eligible)
-4. Select or create a key pair
-5. Configure the Security Group:
+| Variable        | Description                          | Default       |
+|-----------------|--------------------------------------|---------------|
+| `aws_region`    | AWS region to deploy to              | `us-east-1`   |
+| `instance_type` | EC2 instance type                    | `t2.micro`    |
+| `key_name`      | Name of the SSH key pair             | n/a           |
+| `allowed_ssh_cidr` | CIDR allowed to SSH (your IP/32)  | n/a           |
 
-| Type  | Protocol | Port | Source        |
-|-------|----------|------|---------------|
-| SSH   | TCP      | 22   | Your IP only  |
-| HTTP  | TCP      | 80   | 0.0.0.0/0     |
+<!-- TODO: Match this table to your real variables.tf. -->
 
-6. Launch the instance
+Create a `terraform.tfvars` file (excluded from Git):
 
-### 2. Connect via SSH
-
-```bash
-chmod 400 your-key.pem
-ssh -i your-key.pem ubuntu@<EC2_PUBLIC_IP>
-```
-
-### 3. Install dependencies
-
-```bash
-sudo apt update && sudo apt upgrade -y
-# TODO: add the packages you install, e.g.:
-# sudo apt install -y nginx git
-```
-
-### 4. Deploy the application
-
-```bash
-git clone https://github.com/dolev225/DevOps-Project.git
-cd DevOps-Project/Cloude/DevOps-Project-01/Deploy-EC2
-# TODO: add your deployment commands
-```
-
-### 5. Verify
-
-Open your browser and navigate to:
-
-```
-http://<EC2_PUBLIC_IP>
+```hcl
+aws_region       = "us-east-1"
+instance_type    = "t2.micro"
+key_name         = "my-key"
+allowed_ssh_cidr = "203.0.113.10/32"   # replace with your public IP
 ```
 
 ---
 
-## 📸 Screenshots
+## 🚀 Deployment
 
-<!-- TODO: Add screenshots of the EC2 dashboard, terminal, and the running app. -->
-<!-- ![EC2 Instance](./images/ec2-instance.png) -->
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/dolev225/DevOps-Project.git
+cd DevOps-Project/Cloude/DevOps-Project-01/Deploy-EC2
+```
+
+### 2. Authenticate with AWS
+
+```bash
+aws configure
+# or export AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_DEFAULT_REGION
+```
+
+### 3. Initialize Terraform
+
+```bash
+terraform init
+```
+
+### 4. Review the execution plan
+
+```bash
+terraform fmt -check
+terraform validate
+terraform plan
+```
+
+### 5. Apply
+
+```bash
+terraform apply
+```
+
+Type `yes` when prompted (or use `terraform apply -auto-approve` in automation). When it finishes, Terraform prints the outputs:
+
+```
+Outputs:
+
+instance_public_ip = "x.x.x.x"
+application_url    = "http://x.x.x.x"
+```
+
+### 6. Verify
+
+```bash
+curl http://<instance_public_ip>
+```
+
+Or open the URL in your browser. Allow a minute or two after `apply` for `user_data` to finish installing.
+
+### 7. Connect via SSH (optional)
+
+```bash
+chmod 400 my-key.pem
+ssh -i my-key.pem ubuntu@<instance_public_ip>
+```
+
+---
+
+## 🔄 CI Pipeline (GitHub Actions)
+
+Every push and pull request to `main` that touches this project triggers the pipeline defined in
+[`.github/workflows/ci.yml`](../../../.github/workflows/ci.yml).
+
+| Job                     | Tool          | Purpose                                          |
+|-------------------------|---------------|--------------------------------------------------|
+| `terraform-validate`    | Terraform     | `fmt -check` and `validate` on the configuration |
+| `lint-shell`            | ShellCheck    | Catch bugs in Bash scripts (incl. `user_data`)   |
+| `lint-yaml`             | yamllint      | Validate YAML syntax and style                   |
+| `lint-markdown`         | markdownlint  | Keep documentation clean                         |
+| `secret-scan`           | Gitleaks      | Detect leaked credentials                        |
+| `check-sensitive-files` | Git + Bash    | Fail if `.pem`, `.env` or `.tfstate` are committed |
 
 ---
 
 ## 🔒 Security Best Practices
 
-- Restrict SSH access (port 22) to your own IP
-- Never commit `.pem` files or credentials to Git (add them to `.gitignore`)
+- Restrict SSH (port 22) to your own IP via `allowed_ssh_cidr`, never `0.0.0.0/0`
+- Never commit `.pem` files, `terraform.tfvars` or `*.tfstate` (they may contain secrets)
+- Use a **remote backend** (S3 + DynamoDB locking) for state in team environments
+- Use IAM roles / least-privilege policies instead of hard-coded access keys
 - Keep the OS and packages updated
-- Use IAM roles instead of hard-coded access keys
+
+Recommended `.gitignore`:
+
+```
+*.pem
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+crash.log
+```
 
 ---
 
 ## 🧹 Cleanup
 
-To avoid unexpected AWS charges, terminate resources when you're done:
+To avoid unexpected AWS charges, destroy all resources when you are done:
 
-1. EC2 Console → select the instance → **Instance state → Terminate**
-2. Delete unused Elastic IPs, volumes, and security groups
+```bash
+terraform destroy
+```
+
+Confirm with `yes`. Terraform removes the instance, security group and key pair it created.
 
 ---
 
 ## 🛠️ Troubleshooting
 
-| Problem                       | Possible Solution                                           |
-|-------------------------------|-------------------------------------------------------------|
-| `Permission denied (publickey)` | Check key permissions (`chmod 400`) and the username        |
-| Site not reachable            | Verify Security Group allows port 80 and the service runs   |
-| Connection timed out          | Check public IP, route table, and Security Group rules      |
+| Problem | Possible Solution |
+|---------|-------------------|
+| `No valid credential sources found` | Run `aws configure` or export AWS credentials |
+| `UnauthorizedOperation` | The IAM user lacks EC2 permissions |
+| `InvalidKeyPair.NotFound` | Check `key_name` and that the key exists in the chosen region |
+| Site not reachable after apply | Wait for `user_data` to finish; check the security group allows port 80 |
+| `Permission denied (publickey)` | Check `chmod 400` on the key and the SSH username |
+| State lock / drift issues | Run `terraform refresh` or inspect with `terraform state list` |
+
+Useful: check the bootstrap log on the instance with `sudo cat /var/log/cloud-init-output.log`.
 
 ---
 
 ## 🔮 Future Improvements
 
-- [ ] Automate provisioning with Terraform
-- [ ] Add CI/CD pipeline (GitHub Actions / Jenkins)
-- [ ] Containerize with Docker
-- [ ] Add monitoring with CloudWatch
+- [x] Provision infrastructure with Terraform
+- [x] Add CI pipeline (GitHub Actions)
+- [ ] Remote state backend (S3 + DynamoDB)
+- [ ] CD: run `terraform apply` automatically on merge to `main`
+- [ ] Containerize the app with Docker
+- [ ] Monitoring with CloudWatch
 
 ---
 
