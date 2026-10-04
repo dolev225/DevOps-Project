@@ -12,5 +12,5 @@ module "my_infrastructure" {
 
 output "application_url" {
   description = "URL to test the load balancer"
-  value       = module.my_infrastructure.application_url
+  value       = "URL: ${module.my_infrastructure.application_url}"
 }
