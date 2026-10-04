@@ -177,8 +177,8 @@ Stop one of the instances in the EC2 console. After the health check fails, the 
 ## 📸 Screenshots
 
 <!-- TODO: Add screenshots: the Bear page, the Deer page, the load balancer and target group in the AWS console. -->
-<!-- ![Bear server](./images/bear-page.png) -->
-<!-- ![Deer server](./images/deer-page.png) -->
+[Bear server](./Screenshots/bear-page.png) -->
+[Deer server](./Screenshots/deer-page.png)
 
 ---
 ## 🧹 Cleanup
