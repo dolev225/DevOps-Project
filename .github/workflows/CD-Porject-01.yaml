@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: terraform validate
-        uses: dlook/terraform-validate@v2
+        uses: dflook/terraform-validate@v2
         id: validate
         with:
           path: Cloude/DevOps-Project-01/Deploy-EC2
