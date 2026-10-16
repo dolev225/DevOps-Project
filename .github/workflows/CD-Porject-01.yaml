@@ -8,19 +8,23 @@ on:
 
 jobs:
   #--------------------Terraform-validate--------------------#
-  validate:
+  validate-and-plan:
     runs-on: ubuntu-latest
-    name: Validate Terraform module
+    name: Terraform Validate and Plan
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: terraform validate
-        uses: dflook/terraform-validate@v2
-        id: validate
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
-          path: Cloude/DevOps-Project-01/Deploy-EC2
+          terraform_version: '1.6.0'
 
-      - name: Validate failed
-        if: ${{ failure() && steps.validate.outputs.failure_reason == 'validate-failed' }}
-        run: echo "terraform validate failed"
+      - name: Terraform Init
+        working-directory: Cloude/DevOps-Project-01/Deploy-EC2
+        run: terraform init
+
+
+      - name: Terraform Validate
+        working-directory: Cloude/DevOps-Project-01/Deploy-EC2
+        run: terraform validate
