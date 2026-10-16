@@ -7,8 +7,6 @@ module "my_infrastructure" {
   instance_type = "t3.micro"
   if_Public_ip  = true
 
-  aws_access_key = var.aws_access_key
-  aws_secret_key = var.aws_secret_key
 }
 
 output "load_balancer_address" {

@@ -1,0 +1,29 @@
+name: CI/CD Devops-Porject-01
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+
+#------------------Terraform-validate-----------------------#
+  validate:
+    runs-on: ubuntu-latest
+    name: Validate Terraform module
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: terraform validate
+        uses: dflook/terraform-validate@v2
+        id: validate
+        with:
+          path: my-terraform-config
+
+      - name: Validate failed
+        if: ${{ failure() && steps.validate.outputs.failure_reason == 'validate-failed' }}
+        run: echo "terraform validate failed"
+
+
+#------------------Hadolint-----------------------#
+ 

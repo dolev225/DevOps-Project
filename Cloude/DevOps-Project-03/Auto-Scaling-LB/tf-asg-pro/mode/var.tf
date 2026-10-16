@@ -13,11 +13,3 @@ variable "if_Public_ip" {
   default = true
   type = bool
 }
-
-variable "aws_access_key" {
-  type = string
-}
-
-variable "aws_secret_key" {
-  type = string
-}
