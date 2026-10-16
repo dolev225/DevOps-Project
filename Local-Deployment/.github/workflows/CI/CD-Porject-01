@@ -2,6 +2,8 @@ name: CI/CD Devops-Porject-01
 
 on:
   push:
+    paths:
+      - 'Cloude/DevOps-Project-01/**'
   workflow_dispatch:
 
 jobs:
