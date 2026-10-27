@@ -197,10 +197,3 @@ Confirm with `yes`. Terraform removes the instance, security group and key pair 
 Useful: check the bootstrap log on the instance with `sudo cat /var/log/cloud-init-output.log`.
 
 ---
-
-## 👤 Author
-
-**Dolev**
-GitHub: [@dolev225](https://github.com/dolev225)
-
----
