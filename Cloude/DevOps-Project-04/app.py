@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.secret_key = 'super-secret-key-change-in-production'
 
 
-S3_BUCKET = os.environ.get('S3_BUCKET_NAME', 'dolev-my-first-bucket-123')
+S3_BUCKET = os.environ.get('S3_BUCKET_NAME', '12345678901234')  # Replace with your S3 bucket name
 REGION_NAME = os.environ.get('AWS_REGION', 'us-east-1')
 s3_client = boto3.client('s3', region_name=REGION_NAME)
 
