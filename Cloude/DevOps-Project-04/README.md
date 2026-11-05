@@ -199,15 +199,6 @@ Confirm with `yes` to remove all created AWS resources.
 | File upload fails | Check if the EC2 instance role has permissions to put/get objects from the S3 bucket |
 | State lock / drift issues | Run `terraform refresh` or inspect with `terraform state list` |
 
-> **Tip:** You can inspect bootstrap logs on an EC2 instance via SSH using: `sudo cat /var/log/cloud-init-output.log`
 
-```
 
----
 
-<ElicitationsGroup message="מה תרצה לעשות כעת עם הפרויקט?">
-  <Elicitation label="הוספת הרשאות S3 ל-IAM Role" query="איך להגדיר IAM Role ו־Instance Profile בטראפורם כך שירותי ה־EC2 יורשו לגשת ל־S3 בצורה מאובטחת?"/>
-  <Elicitation label="הוספת משתני סביבה מתקדמים" query="איך להעביר משתני סביבה דרך סקריפט ה־Bootstrap לקונטיינר ה־Docker?"/>
-</ElicitationsGroup>
-
-```
