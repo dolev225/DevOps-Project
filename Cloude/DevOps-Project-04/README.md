@@ -1,5 +1,3 @@
-
-```markdown
 # Cloud storage: AWS with Terraform
 
 > Infrastructure as Code: An AWS application that uploads files to an S3 bucket, deployed with a single `terraform apply`.
